@@ -1,0 +1,117 @@
+openapi: 3.0.3
+info:
+  title: postgres database query monitoring
+  description: aplication provides an api for monitor queries based on their executain time
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:8080'
+paths:
+  /queries:
+    get:
+      summary: "Get queries execution information"
+      parameters:
+        - $ref: "#/components/parameters/QueryType"
+        - $ref: "#/components/parameters/PageLimit"
+        - $ref: "#/components/parameters/PageNumber"
+        - $ref: "#/components/parameters/Sort"
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  metadata: { $ref: '#/components/schemas/Metadata'}
+                  payload:
+                    type: array
+                    items: { $ref: '#/components/schemas/Query' }
+                example:
+                  metadata: 
+                    page: 5
+                    per_page: 10
+                    page_count: 8
+                    total_count: 78
+                  payload:
+                    - id: 46
+                      statement: "select * from users"
+                      max_exec_time: 1s
+                      mean_exec_time: 789ms
+        400: { $ref: '#/components/responses/BadRequest' }
+        500: { $ref: '#/components/responses/InternalServerError'}
+
+components:
+  parameters:
+    QueryType:
+      description: database query statement type
+      name: type
+      in: query
+      required: false
+      schema: { type: string, enum: [ "select","update","insert","delete" ], example: "select"}
+    PageLimit:
+      description: record size per page
+      name: limit
+      in: query
+      required: false
+      schema: { type: integer, example: 10}
+    PageNumber:
+      description: requested page number
+      name: page
+      in: query
+      required: false
+      schema: { type: integer, example: 5}
+    Sort:
+      description: sorting based on query execution time 
+      name: sort
+      schema: { type: string, enum: [ "asc","desc" ], default: "desc",  example: "desc"}
+      in: query
+      required: false
+  
+  schemas:
+    Query:
+      type: object
+      properties:
+        id: { type: integer }
+        statement: { type: string }
+        max_exec_time: { type: number }
+        mean_exec_time: { type: number }
+    Metadata:
+      type: object
+      required: [ page, per_page, page_count, total_count ]
+      properties:
+        page: { type: integer }
+        per_page: { type: integer }
+        page_count: { type: integer }
+        total_count: { type: integer }
+    BadRequest:
+      type: object
+      required: [ code, message ,field ]
+      properties:
+        message: { type: string }
+        field: { type: string }
+      example:
+        message: "unsupported type"
+        field: "type"
+    InternalServerError:
+      type: object
+      required: [msg, error]
+      properties:
+        message: {type: string}
+        error: {type: string}
+      example:
+        message: "internal server error"
+        error: "Application is shutting down on the web server."
+    
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BadRequest'
+    InternalServerError:
+      description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InternalServerError'
