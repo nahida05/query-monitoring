@@ -12,9 +12,9 @@ import (
 func main() {
 	fx.New(
 		fx.Provide(
-			logger.New,         // initialize new logger
-			config.New,         // initialize config
-			storage.New,        // initialize storage interface in order to use db methods
+			logger.New, // initialize new logger
+			config.New, // initialize config
+			fx.Annotate(storage.New, fx.As(new(service.Storage), new(error))), // initialize storage interface in order to use db methods
 			service.New,        // initialize fiber service
 			service.NewHandler, // initialize Handler struct to implement http requests
 		),

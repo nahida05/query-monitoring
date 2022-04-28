@@ -1,19 +1,20 @@
 package service
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"github.com/magiconair/properties/assert"
-	"github.com/nahida05/query-monitoring/internal/storage/repository"
-	"github.com/nahida05/query-monitoring/pkg/logger"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/magiconair/properties/assert"
+	"github.com/nahida05/query-monitoring/pkg/logger"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func TestHandler_Get(t *testing.T) {
 
 	h := NewHandler(
-		repository.Mock{},
+		MockRepository{},
 		logger.New(),
 	)
 

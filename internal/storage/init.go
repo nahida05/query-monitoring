@@ -3,15 +3,16 @@ package storage
 import (
 	"context"
 	"fmt"
+
 	"github.com/nahida05/query-monitoring/config"
-	"github.com/nahida05/query-monitoring/internal/storage/repository"
+
 	"github.com/sirupsen/logrus"
 	"go.uber.org/fx"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func New(lc fx.Lifecycle, cfg *config.Config, logger *logrus.Logger) (repository.Storage, error) {
+func New(lc fx.Lifecycle, cfg *config.Config, logger *logrus.Logger) (QueryMonitor, error) {
 	fmt.Println("test", fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", cfg.DB.Host, cfg.DB.Port, cfg.DB.User, cfg.DB.Password, cfg.DB.Name))
 	db, err := gorm.Open(
 		postgres.Open(
@@ -21,7 +22,7 @@ func New(lc fx.Lifecycle, cfg *config.Config, logger *logrus.Logger) (repository
 	db = db.Debug()
 
 	if err != nil {
-		return nil, fmt.Errorf("unable to create database %w", err)
+		return QueryMonitor{}, fmt.Errorf("unable to create database %w", err)
 	}
 
 	lc.Append(fx.Hook{
@@ -56,5 +57,5 @@ func New(lc fx.Lifecycle, cfg *config.Config, logger *logrus.Logger) (repository
 		},
 	})
 
-	return queryMonitor{db: db}, nil
+	return QueryMonitor{db: db}, nil
 }

@@ -2,18 +2,17 @@ package service
 
 import (
 	"github.com/nahida05/query-monitoring/internal/storage/model"
-	"github.com/nahida05/query-monitoring/internal/storage/repository"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
 )
 
 type Handler struct {
-	storage repository.Storage
+	storage Storage
 	logger  *logrus.Logger
 }
 
-func NewHandler(storage repository.Storage, logger *logrus.Logger) *Handler {
+func NewHandler(storage Storage, logger *logrus.Logger) *Handler {
 	return &Handler{
 		storage: storage,
 		logger:  logger,

@@ -14,14 +14,14 @@ import (
 const (
 	defaultSorting = "DESC"
 	defaultLimit   = 10
-	defaultOffset  = 0
+	defaultOffset  = 1
 )
 
-type queryMonitor struct {
+type QueryMonitor struct {
 	db *gorm.DB
 }
 
-func (q queryMonitor) GetList(ctx context.Context, filter model.QueryFilter) (model.QueryResult, error) {
+func (q QueryMonitor) GetList(ctx context.Context, filter model.QueryFilter) (model.QueryResult, error) {
 	query := q.db.WithContext(ctx)
 
 	result := model.QueryResult{}
@@ -49,7 +49,7 @@ func (q queryMonitor) GetList(ctx context.Context, filter model.QueryFilter) (mo
 	filteredData := []model.Query{}
 	err := query.Find(&filteredData).Error
 	if err != nil {
-		return result, nil
+		return result, err
 	}
 
 	totalCount := len(filteredData)
@@ -65,7 +65,8 @@ func (q queryMonitor) GetList(ctx context.Context, filter model.QueryFilter) (mo
 
 	err = query.Limit(filter.PageLimit).
 		Offset((filter.PageNumber - 1) * filter.PageLimit).
-		Find(&result.Queries).Error
+		Find(&result.Queries).
+		Error
 
 	return result, err
 }

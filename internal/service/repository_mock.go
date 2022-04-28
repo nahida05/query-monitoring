@@ -1,4 +1,4 @@
-package repository
+package service
 
 import (
 	"context"
@@ -6,10 +6,10 @@ import (
 	"github.com/nahida05/query-monitoring/internal/util"
 )
 
-type Mock struct {
+type MockRepository struct {
 }
 
-func (m Mock) GetList(ctx context.Context, filter model.QueryFilter) (model.QueryResult, error) {
+func (m MockRepository) GetList(ctx context.Context, filter model.QueryFilter) (model.QueryResult, error) {
 	totalCount := 100
 	return model.QueryResult{
 		Queries: []model.Query{
